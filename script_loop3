@@ -1,0 +1,12 @@
+#!/bin/bash
+day_of_birth=11
+
+echo "Skrypt 3: Liczby od 1 do dnia urodzin:"
+i=1
+while [[ $i -le 32 ]]; do
+    echo $i
+    if [[ $i -eq $day_of_birth ]]; then
+        break
+    fi
+    ((i++))
+done

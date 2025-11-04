@@ -1,0 +1,78 @@
+#!/bin/bash
+
+# Sprawdzenie, czy uruchomiono w trybie testowym
+if [ "$1" == "test_mode" ]; then
+    echo "=== TESTY SKRYPTU ==="
+
+    # Test 1: Folder lab1
+    echo "Test 1: Folder 'lab1':"
+    if [ -d "lab1" ]; then
+        bash "$0" "lab1"
+    else
+        echo "Folder 'lab1' nie istnieje."
+    fi
+    echo "--------------------"
+
+    # Test 2: Folder lab2
+    echo "Test 2: Folder 'lab2':"
+    if [ -d "lab2" ]; then
+        bash "$0" "lab2"
+    else
+        echo "Folder 'lab2' nie istnieje."
+    fi
+    echo "--------------------"
+
+    # Test 3: Pusty folder
+    test_empty_folder="test_empty"
+    mkdir -p "$test_empty_folder"
+    echo "Test 3: Pusty folder:"
+    bash "$0" "$test_empty_folder"
+    echo "--------------------"
+
+    # Test 4: Nieistniejący folder
+    echo "Test 4: Nieistniejący folder:"
+    bash "$0" "folder_nie_istnieje"
+    echo "--------------------"
+
+    # Usuwanie pustego folderu po testach
+    rm -rf "$test_empty_folder"
+
+    echo "=== TESTY ZAKOŃCZONE ==="
+    exit 0
+fi
+
+# Skrypt realizuje zadanie nr 3: Zbieranie informacji o każdym podfolderze znajdującym się w folderze podanym jako argument.
+# Informacje obejmują: nazwę podfolderu i liczbę znajdujących się w nim plików.
+
+# Sprawdzenie, czy podano argument
+if [ -z "$1" ]; then
+    echo "Użycie: $0 <ścieżka do folderu>"
+    exit 1
+fi
+
+# Ścieżka podana jako argument
+target_folder="$1"
+
+# Sprawdzenie, czy folder istnieje
+if [ ! -d "$target_folder" ]; then
+    echo "Błąd: Folder '$target_folder' nie istnieje."
+    exit 1
+fi
+
+# Flaga do śledzenia podfolderów
+found_subfolder=false
+
+# Iteracja przez podfoldery
+for subfolder in "$target_folder"/*; do
+    if [ -d "$subfolder" ]; then
+        found_subfolder=true
+        # Liczenie plików w podfolderze
+        file_count=$(ls -1 "$subfolder" 2>/dev/null | wc -l)
+        echo "Podfolder: $(basename "$subfolder"), Liczba plików: $file_count"
+    fi
+done
+
+# Komunikat, jeśli brak podfolderów
+if ! $found_subfolder; then
+    echo "Brak podfolderów w folderze: $target_folder"
+fi

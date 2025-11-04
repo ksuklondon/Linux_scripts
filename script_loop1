@@ -1,0 +1,16 @@
+#!/bin/bash
+x=2 # przedostatnia cyfra numeru albumu
+y=7 # ostatnia cyfra numeru albumu
+
+if [[ $x -gt $y ]]; then
+    temp=$x
+    x=$y
+    y=$temp
+elif [[ $x -eq $y ]]; then
+    ((y+=2))
+fi
+
+echo "Skrypt 1: Wartości od x do y:"
+for ((i=x; i<=y; i++)); do
+    echo $i
+done

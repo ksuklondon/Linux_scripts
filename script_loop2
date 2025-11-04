@@ -1,0 +1,11 @@
+#!/bin/bash
+months=("Styczeń" "Luty" "Marzec" "Kwiecień" "Maj" "Czerwiec" "Lipiec" "Sierpień" "Wrzesień" "Październik" "Listopad" "Grudzień")
+
+echo "Skrypt 2: Numery i nazwy miesięcy (pomijając sierpień):"
+for i in "${!months[@]}"; do
+    month_number=$((i+1))
+    if [[ $month_number -eq 8 ]]; then
+        continue
+    fi
+    echo "$month_number: ${months[i]}"
+done

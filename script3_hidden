@@ -1,0 +1,11 @@
+#!/bin/bash
+
+# Opis: Skrypt liczy ukryte pliki w katalogu /etc z datą modyfikacji w lutym.
+
+# Wybór ukrytych plików w katalogu /etc
+# - Używamy 'awk' zamiast 'grep', by precyzyjnie filtrować pliki zaczynające się od kropki
+# - Kolumna 6 sprawdza miesiąc modyfikacji
+count=$(ls -la /etc | awk '$9 ~ /^\./ && $6 == "Feb"' | wc -l)
+
+# Wyświetlenie wyniku
+echo "Liczba ukrytych plików z datą z lutego: $count"

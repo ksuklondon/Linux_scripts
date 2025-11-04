@@ -1,0 +1,26 @@
+#!/bin/bash
+
+# Sprawdzenie, czy podano wystarczającą liczbę argumentów
+if [ $# -lt 1 ]; then
+  echo "Podaj co najmniej jeden parametr."
+  exit 1
+fi
+
+# Pobranie miesiąca i dnia urodzenia od użytkownika
+read -p "Podaj miesiąc urodzenia: " miesiac
+read -p "Podaj dzień urodzenia: " dzien
+
+# Sprawdzenie, czy dzien nie jest równy zero
+if [ "$dzien" -eq 0 ]; then
+  echo "Dzień urodzenia nie może być równy zero!"
+  exit 1
+fi
+
+# Pętla po wszystkich podanych parametrach
+for liczba in "$@"; do
+  # Dodaj miesiąc do liczby i podziel przez dzień
+  wynik=$(( (liczba + miesiac) / dzien ))
+
+  # Wyświetlenie wyniku
+  echo "$liczba + $miesiac / $dzien = $wynik"
+done

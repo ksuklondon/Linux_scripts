@@ -1,0 +1,38 @@
+#!/bin/bash
+
+# Litery z imienia i nazwiska
+IMIE1="K"
+IMIE2="A"
+NAZW1="S"
+NAZW2="T"
+
+# Iteracja po wszystkich plikach w katalogu /etc
+for file in /etc/*; do
+    # Pobieramy nazwę pliku (bez ścieżki)
+    nazwa=$(basename "$file")
+
+    # Debugowanie: Wyświetlamy nazwę analizowanego pliku
+    echo "Analizuję plik: $nazwa"
+
+    # Sprawdzamy, czy nazwa pliku spełnia kryteria
+    if [[ "${nazwa:0:1}" == "$IMIE1" || "${nazwa:0:1}" == "$IMIE2" ]]; then
+        if [[ "${nazwa:1:1}" == "$NAZW1" || "${nazwa:1:1}" == "$NAZW2" ]]; then
+            # Pobieramy rozmiar pliku
+            rozmiar=$(stat --format="%s" "$file" 2>/dev/null || echo "0")
+            
+            # Sprawdzamy typ pliku
+            if [ -L "$file" ]; then
+                typ="link"
+            elif [ -d "$file" ]; then
+                typ="katalog"
+            elif [ -f "$file" ]; then
+                typ="plik"
+            else
+                typ="inny"
+            fi
+
+            # Wyświetlamy informacje o pliku
+            echo "Nazwa: $nazwa, Rozmiar: $rozmiar bajtów, Typ: $typ"
+        fi
+    fi
+done

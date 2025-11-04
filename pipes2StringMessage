@@ -1,0 +1,72 @@
+#include <sys/wait.h>
+#include <unistd.h>
+#include <vector>
+#include <iostream>
+#include <string>
+#include <array>
+#include <algorithm>
+
+std::string pipeRead(int pipe)
+{
+    std::string message;
+    char buffer[256]; // Bufor do odczytu
+    ssize_t bytesRead = read(pipe, buffer, sizeof(buffer) - 1);
+    if (bytesRead > 0)
+    {
+        buffer[bytesRead] = '\0'; // Zakończenie stringa
+        message = std::string(buffer);
+    }
+    return message;
+}
+
+void pipeWrite(int pipe, std::string message)
+{
+    write(pipe, message.c_str(), message.size());
+}
+
+std::vector<std::array<int, 2>> createPipes(int count)
+{
+    std::vector<std::array<int, 2>> pipes;
+
+    for (int i = 0; i < count; ++i)
+    {
+        std::array<int, 2> newPipe;
+        int* data = newPipe.data(); // data jest to wskaźnik na 2-elementową tablicę wartości typu int
+
+        // Tworzenie potoku
+        if (pipe(data) == -1)
+        {
+            perror("Error creating pipe.");
+            exit(EXIT_FAILURE);
+        }
+        pipes.push_back(newPipe);
+    }
+
+    return pipes;
+}
+
+int main(int argc, char* argv[])
+{
+    auto pipes = createPipes(1);
+
+    if (fork() == 0)
+    {
+        // Proces potomny (child)
+        close(pipes[0][0]); // Zamykamy odczyt w dziecku
+        std::string message = "komunikat przesłany przez potok";
+        pipeWrite(pipes[0][1], message); // Wysyłamy dane do potoku
+        close(pipes[0][1]); // Zamykamy zapis w dziecku
+    }
+    else
+    {
+        // Proces rodzica (parent)
+        close(pipes[0][1]); // Zamykamy zapis w rodzicu
+        std::string message = pipeRead(pipes[0][0]); // Odczytujemy dane z potoku
+        close(pipes[0][0]); // Zamykamy odczyt w rodzicu
+
+        std::cout << "Odebrano wiadomość: " << message << "\n";
+        wait(nullptr); // Czekamy na zakończenie procesu potomnego
+    }
+
+    return 0;
+}

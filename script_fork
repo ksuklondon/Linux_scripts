@@ -1,0 +1,65 @@
+#include <iostream>
+#include <unistd.h>
+#include <sys/wait.h>
+
+using namespace std;
+
+void child1_function() {
+    cout << "Child 1: Wprowadź dwie liczby (oddzielone spacją):" << endl;
+    cout << "Masz 15 sekund na wykonanie tego zadania." << endl;
+    int a, b;
+    cin >> a >> b;
+    cout << "Child 1: Suma: " << a + b << endl;
+    sleep(15); // Proces trwa 15 sekund
+    cout << "Child 1: Kończę działanie." << endl;
+}
+
+void child2_function() {
+    sleep(15); // Poczekaj 15 sekund przed zadaniem pytania
+    cout << "Child 2: Jak masz na imię?" << endl;
+    cout << "Masz 10 sekund na podanie swojego imienia." << endl;
+    string name;
+    cin >> name;
+    cout << "Child 2: Hello " << name << "!" << endl;
+    sleep(10); // Proces trwa 10 sekund
+    cout << "Child 2: Kończę działanie." << endl;
+}
+
+int main() {
+    pid_t pid1, pid2;
+
+    // Tworzenie pierwszego procesu potomnego
+    pid1 = fork();
+    if (pid1 == 0) {
+        // Kod dla pierwszego potomka
+        child1_function();
+        exit(0);
+    }
+    else if (pid1 < 0) {
+        cerr << "Fork 1 failed" << endl;
+        exit(1);
+    }
+
+    // Tworzenie drugiego procesu potomnego
+    pid2 = fork();
+    if (pid2 == 0) {
+        // Kod dla drugiego potomka
+        child2_function();
+        exit(0);
+    }
+    else if (pid2 < 0) {
+        cerr << "Fork 2 failed" << endl;
+        exit(1);
+    }
+
+    // Kod dla procesu rodzica
+    int status;
+    pid_t pid;
+    while ((pid = wait(&status)) > 0) {
+        cout << "Proces potomny o PID " << pid << " zakończony." << endl;
+    }
+
+    cout << "Proces główny: Wszystkie procesy potomne zakończone." << endl;
+    return 0;
+}
+
